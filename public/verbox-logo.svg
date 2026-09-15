@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <!-- The main coral-colored "jar" container (Scaled to fill the space) -->
+  <rect x="20" y="20" width="160" height="160" rx="40" fill="#FD6E5F" />
+
+  <!-- The narrowed lid (Width: 75px) with rounded top and a completely flat bottom edge -->
+  <!-- Y=18 ensures there is a 2px transparent gap between the lid and the jar (Y=20) -->
+  <path d="M 62.5 18 
+           L 137.5 18 
+           L 137.5 8 
+           A 6 6 0 0 0 131.5 2 
+           L 68.5 2 
+           A 6 6 0 0 0 62.5 8 
+           Z" 
+        fill="#FF8573" />
+
+  <!-- The enlarged chat bubble body (White) -->
+  <circle cx="100" cy="100" r="35" fill="#FFFFFF" />
+
+  <!-- The enlarged chat bubble tail pointing down and to the left -->
+  <polygon points="90,121 75,140 106,132" fill="#FFFFFF" />
+
+  <!-- The three dots inside the chat bubble (enlarged and spaced further apart) -->
+  <circle cx="85" cy="100" r="5" fill="#FD6E5F" />
+  <circle cx="100" cy="100" r="5" fill="#FD6E5F" />
+  <circle cx="115" cy="100" r="5" fill="#FD6E5F" />
+</svg>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - Verbox</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="./verbox-logo.svg">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: #0D0B1E;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Light mode overrides – applied when body.light-mode is active */
+        body.light-mode {
+            background: #f0f2f5;
+            color: #1a1a2e;
+        }
+        body.light-mode .bg-animated {
+            background: radial-gradient(ellipse 600px 600px at 15% 50%, rgba(255,107,91,0.05) 0%, transparent 70%),
+                        radial-gradient(ellipse 600px 600px at 85% 50%, rgba(127,182,133,0.05) 0%, transparent 70%),
+                        radial-gradient(ellipse 800px 200px at 50% 50%, rgba(0,0,0,0.02) 0%, transparent 70%),
+                        linear-gradient(170deg, #f0f2f5 0%, #e4e7eb 30%, #f0f2f5 60%, #e4e7eb 100%);
+        }
+        body.light-mode .grid-overlay {
+            background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+        }
+        body.light-mode .verbox-header {
+            background: rgba(255,255,255,0.8);
+            color: #1a1a2e;
+        }
+        body.light-mode .glass-card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            border-color: rgba(0,0,0,0.08);
+            color: #1a1a2e;
+        }
+        body.light-mode .text-white { color: #1a1a2e !important; }
+        body.light-mode .text-white-50 { color: rgba(0,0,0,0.6) !important; }
+        body.light-mode .btn-outline-light {
+            border-color: rgba(0,0,0,0.2);
+            color: #1a1a2e;
+        }
+        body.light-mode .btn-outline-light:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        body.light-mode .form-control-dark {
+            background: rgba(0,0,0,0.05);
+            border-color: rgba(0,0,0,0.1);
+            color: #1a1a2e;
+        }
+        body.light-mode .badge-dark-theme {
+            background: rgba(0,0,0,0.1);
+            color: #1a1a2e;
+        }
+
+        .bg-animated {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background:
+                radial-gradient(ellipse 600px 600px at 15% 50%, rgba(255, 107, 91, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 600px 600px at 85% 50%, rgba(127, 182, 133, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 800px 200px at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
+                linear-gradient(170deg, #0D0B1E 0%, #151238 30%, #1A1744 60%, #12102D 100%);
+        }
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.03; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* ===== FULL-WIDTH HEADER ===== */
+        .verbox-header {
+            width: 100%;
+            background: rgba(13, 11, 30, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 1.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+            transition: background 0.3s, color 0.3s;
+        }
+        .header-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .header-logo-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #FF6B5B, #e85d4e);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(255,107,91,0.3);
+            position: relative;
+        }
+        .header-logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -6px; left: 50%; transform: translateX(-50%);
+            width: 24px; height: 5px;
+            background: #FF6B5B;
+            border-radius: 3px 3px 0 0;
+        }
+        .header-logo-icon i { font-size: 22px; color: #fff; margin-top: 4px; }
+        .header-name {
+            font-size: 1.6rem; font-weight: 700; color: #fff;
+            letter-spacing: -0.5px;
+            margin-top: 0.2rem;
+        }
+        .header-tagline {
+            font-size: 0.7rem; color: rgba(255,255,255,0.4);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        body.light-mode .header-name { color: #1a1a2e; }
+        body.light-mode .header-tagline { color: rgba(0,0,0,0.5); }
+
+        /* ===== MAIN CARD ===== */
+        .glass-card {
+            background: rgba(26, 23, 68, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            max-width: 460px;
+            margin: auto;
+            position: relative;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .btn-verbox {
+            background: linear-gradient(135deg, #FF6B5B, #e85d4e);
+            border: none;
+            font-weight: 600;
+            color: white;
+        }
+        .btn-verbox:hover { background: linear-gradient(135deg, #FF7B6B, #FF6B5B); color: white; }
+        .text-verbox { color: #FF6B5B; }
+
+        .avatar-circle {
+            width: 85px; height: 85px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700; color: #fff;
+            background: linear-gradient(135deg, #FF6B5B, #e85d4e);
+            box-shadow: 0 8px 25px rgba(255, 107, 91, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .online-dot {
+            width: 14px; height: 14px; background-color: #22c55e;
+            border: 3px solid #1A1744;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px; right: 2px;
+        }
+
+        /* Back button */
+        .back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            z-index: 5;
+        }
+        body.light-mode .back-btn {
+            color: #1a1a2e;                /* dark icon */
+            border-color: rgba(0,0,0,0.2); /* dark border */
+        }
+        body.light-mode .back-btn:hover {
+            background: rgba(0,0,0,0.05);
+            color: #FF6B5B;                /* keep coral hover */
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: #FF6B5B; }
+
+        .menu-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.05); }
+
+        .badge-verbox { background: rgba(255,107,91,0.15); color: #FF6B5B; }
+        .badge-dark-theme { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+
+        .form-control-dark {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            border-radius: 12px;
+        }
+        .form-control-dark:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 107, 91, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 107, 91, 0.1);
+        }
+        .form-control-dark::placeholder { color: rgba(255, 255, 255, 0.25); }
+        .form-label { color: rgba(255,255,255,0.65); }
+
+        .stat-number { font-weight: 700; font-size: 1.2rem; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ===== BEAUTIFIED MODAL STYLES ===== */
+        .modal-content.bg-dark {
+            background: rgba(26, 23, 68, 0.95) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
+        .icon-circle {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem auto;
+        }
+        .icon-circle.success { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .icon-circle.error { background: rgba(255,107,91,0.15); color: #FF6B5B; }
+        .icon-circle.warning { background: rgba(255,193,7,0.15); color: #ffc107; }
+    </style>
+</head>
+<body>
+
+<div class="bg-animated"></div>
+<div class="grid-overlay"></div>
+
+<!-- ========== HEADER ========== -->
+<div class="verbox-header">
+    <div class="header-center">
+        <div class="header-logo-icon">
+            <i class="bi bi-chat-dots-fill"></i>
+        </div>
+        <div class="header-name">Verbox</div>
+        <div class="header-tagline">The Vessel For Your Words</div>
+    </div>
+</div>
+
+<!-- Profile card -->
+<div class="position-relative z-3 d-flex align-items-center justify-content-center p-3" style="min-height: calc(100vh - 140px);">
+    <div class="glass-card p-4 w-100">
+
+        <!-- Back button -->
+        <a href="./chat.html" class="back-btn"><i class="bi bi-arrow-left"></i></a>
+
+        <!-- Avatar (centered) -->
+        <div class="text-center">
+            <div class="d-inline-block position-relative">
+                <div class="avatar-circle" id="avatarContainer">
+                    <span id="avatarInitial">A</span>
+                    <img id="avatarImage" src="" alt="Profile" style="display: none;">
+                </div>
+                <div class="online-dot"></div>
+            </div>
+        </div>
+
+        <!-- Profile details -->
+        <div class="text-center">
+            <h4 id="displayName" class="fw-bold text-white mt-3 mb-0">Loading...</h4>
+            <p id="displayUsername" class="text-white-50 small mb-1">@username</p>
+            <p id="displayEmail" class="text-white-50 small mb-1">loading@email.com</p>
+            <span class="badge bg-success small">online</span>
+            <div class="text-white-50 fst-italic small mt-2">“ The vessel for your words. ”</div>
+        </div>
+
+        <!-- Stats row (DYNAMIC) -->
+        <div class="row text-center my-4">
+            <div class="col-4">
+                <div class="stat-number text-white" id="msgCount">0</div>
+                <div class="stat-label text-white-50">Messages</div>
+            </div>
+            <div class="col-4">
+                <div class="stat-number text-white" id="channelCount">0</div>
+                <div class="stat-label text-white-50">Channels</div>
+            </div>
+            <div class="col-4">
+                <div class="stat-number text-white" id="contactCount">0</div>
+                <div class="stat-label text-white-50">Contacts</div>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="d-flex gap-2 mb-4">
+            <button id="editBtn" class="btn btn-outline-light flex-grow-1 rounded-pill d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-pencil-square"></i> Edit profile
+            </button>
+            <a href="./chat.html" class="btn btn-outline-light flex-grow-1 rounded-pill d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-chat-dots"></i> Message
+            </a>
+        </div>
+
+        <!-- Edit profile form -->
+        <div id="editForm" style="display: none;" class="mb-4">
+            <div class="mb-3">
+                <label for="nameInput" class="form-label small text-uppercase">Display Name</label>
+                <input type="text" id="nameInput" class="form-control form-control-light" placeholder="Your name">
+            </div>
+            <div class="mb-3">
+                <label for="usernameInput" class="form-label small text-uppercase">Username</label>
+                <input type="text" id="usernameInput" class="form-control form-control-light" placeholder="@username">
+                <div class="form-text text-white-50 small">This will be your unique @username.</div>
+            </div>
+            <div class="mb-4">
+                <label for="photoInput" class="form-label small text-uppercase">Profile Picture</label>
+                <input type="file" id="photoInput" class="form-control form-control-light" accept="image/*">
+                <div class="form-text text-white-50 small">Select an image from your PC.</div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button id="cancelBtn" class="btn btn-outline-light">Cancel</button>
+                <button id="saveBtn" class="btn btn-verbox">Save Changes</button>
+            </div>
+            <div id="editError" class="form-text text-danger small mt-2"></div>
+        </div>
+
+        <!-- Settings menu -->
+        <div class="d-flex flex-column">
+            <div class="menu-item d-flex align-items-center justify-content-between" id="notifToggle">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-bell text-white fs-5"></i>
+                    <span class="fw-medium text-white">Notifications</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill badge-verbox px-3 py-1 fw-normal">ON</span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </div>
+            </div>
+
+            <!-- ===== THEME TOGGLE – CLICKABLE ===== -->
+            <div class="menu-item d-flex align-items-center justify-content-between" id="themeToggleItem">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-palette text-white fs-5"></i>
+                    <span class="fw-medium text-white">Theme</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Desktop badge -->
+                    <span id="themeBadgeDesktop" class="badge rounded-pill badge-dark-theme px-3 py-1 fw-normal d-none d-md-inline-block" title="Deep Indigo/Warm Coral">Deep Indigo/Warm Coral</span>
+                    <!-- Mobile badge -->
+                    <span id="themeBadgeMobile" class="badge rounded-pill badge-dark-theme px-3 py-1 fw-normal d-inline-block d-md-none" title="Deep Indigo/Warm Coral">DI/WC</span>
+                    <i class="bi bi-chevron-right text-white-50 small"></i>
+                </div>
+            </div>
+
+            <div class="menu-item d-flex align-items-center justify-content-between" id="signOutBtn">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-box-arrow-right text-danger fs-5"></i>
+                    <span class="fw-medium text-danger">Sign out</span>
+                </div>
+                <i class="bi bi-chevron-right text-white-50 small"></i>
+            </div>
+            <div class="menu-item d-flex align-items-center justify-content-between" id="deleteAccountBtn">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-trash text-danger fs-5"></i>
+                    <span class="fw-medium text-danger">Delete account</span>
+                </div>
+                <i class="bi bi-chevron-right text-white-50 small"></i>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-white-50 small mt-4">
+            © 2026 Verbox — The Vessel For Your Words.
+        </div>
+    </div>
+</div>
+
+<!-- ===== BEAUTIFIED NOTIFICATION MODAL ===== -->
+<div class="modal fade" id="notifyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-secondary">
+      <div class="modal-body text-center py-4">
+        <div id="notifyIcon" class="icon-circle success mb-3">
+          <i id="notifyIconInner" class="bi bi-check-circle-fill fs-1"></i>
+        </div>
+        <h6 id="notifyModalTitle" class="fw-bold mb-2"></h6>
+        <p id="notifyModalBody" class="text-white-50 small mb-3"></p>
+      </div>
+      <div class="modal-footer border-secondary justify-content-center">
+        <button type="button" class="btn btn-verbox px-4" id="notifyModalOk">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ---------- THEME TOGGLE LOGIC ----------
+    const themeBadgeDesktop = document.getElementById('themeBadgeDesktop');
+    const themeBadgeMobile = document.getElementById('themeBadgeMobile');
+    const themeToggleItem = document.getElementById('themeToggleItem');
+
+    function updateThemeBadge(isLight) {
+        const desktopText = isLight ? 'White/Warm Coral' : 'Deep Indigo/Warm Coral';
+        const mobileText = isLight ? 'W/WC' : 'DI/WC';
+        if (themeBadgeDesktop) {
+            themeBadgeDesktop.textContent = desktopText;
+            themeBadgeDesktop.title = desktopText;
+        }
+        if (themeBadgeMobile) {
+            themeBadgeMobile.textContent = mobileText;
+            themeBadgeMobile.title = desktopText;
+        }
+    }
+
+    function applyTheme(isLight) {
+        if (isLight) {
+            document.body.classList.add('light-mode');
+        } else {
+            document.body.classList.remove('light-mode');
+        }
+        localStorage.setItem('verbox-theme', isLight ? 'light' : 'dark');
+        updateThemeBadge(isLight);
+    }
+
+    function toggleTheme() {
+        const isLight = !document.body.classList.contains('light-mode');
+        applyTheme(isLight);
+    }
+
+    // Initialize theme on page load
+    const savedTheme = localStorage.getItem('verbox-theme');
+    if (savedTheme === 'light') {
+        applyTheme(true);
+    } else {
+        applyTheme(false);
+    }
+
+    // Make the whole Theme row clickable
+    if (themeToggleItem) {
+        themeToggleItem.addEventListener('click', toggleTheme);
+    }
+
+    // ---------- MODAL HELPERS ----------
+    const notifyModal = new bootstrap.Modal(document.getElementById('notifyModal'));
+    const notifyIconEl = document.getElementById('notifyIcon');
+    const notifyIconInner = document.getElementById('notifyIconInner');
+    const notifyModalTitle = document.getElementById('notifyModalTitle');
+    const notifyModalBody = document.getElementById('notifyModalBody');
+    const notifyModalOk = document.getElementById('notifyModalOk');
+
+    function showNotify(title, message, type = 'success', callback) {
+        notifyModalTitle.textContent = title;
+        notifyModalBody.textContent = message;
+        if (type === 'success') {
+            notifyIconEl.className = 'icon-circle success mb-3';
+            notifyIconInner.className = 'bi bi-check-circle-fill fs-1';
+        } else if (type === 'error') {
+            notifyIconEl.className = 'icon-circle error mb-3';
+            notifyIconInner.className = 'bi bi-exclamation-circle-fill fs-1';
+        } else if (type === 'warning') {
+            notifyIconEl.className = 'icon-circle warning mb-3';
+            notifyIconInner.className = 'bi bi-exclamation-triangle-fill fs-1';
+        } else {
+            notifyIconEl.className = 'icon-circle success mb-3';
+            notifyIconInner.className = 'bi bi-info-circle-fill fs-1';
+        }
+        notifyModal.show();
+        notifyModalOk.onclick = () => {
+            notifyModal.hide();
+            if (callback) callback();
+        };
+    }
+
+    function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, updateProfile, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+    import firebaseConfig from './firebase-config.js';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getDatabase(app);
+
+    const msgCountEl = document.getElementById('msgCount');
+    const channelCountEl = document.getElementById('channelCount');
+    const contactCountEl = document.getElementById('contactCount');
+
+    const avatarInitial = document.getElementById('avatarInitial');
+    const avatarImage = document.getElementById('avatarImage');
+    const displayNameEl = document.getElementById('displayName');
+    const displayUsernameEl = document.getElementById('displayUsername');
+    const displayEmailEl = document.getElementById('displayEmail');
+    const editBtn = document.getElementById('editBtn');
+    const editForm = document.getElementById('editForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const nameInput = document.getElementById('nameInput');
+    const usernameInput = document.getElementById('usernameInput');
+    const photoInput = document.getElementById('photoInput');
+    const editError = document.getElementById('editError');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const notifToggle = document.getElementById('notifToggle');
+
+    const roomNames = ["GENERAL", "MEDICINE", "TECH", "MUSIC", "GAMING", "SPORTS", "MOVIES", "BOOKS", "FOOD", "ANIME"];
+
+    let currentUser = null;
+    let currentPhotoURL = '';
+
+    function getStoredUser() {
+        const stored = localStorage.getItem('user');
+        return stored ? JSON.parse(stored) : {};
+    }
+
+    function getUsername(email) {
+        const stored = getStoredUser();
+        return stored.username || email.split('@')[0];
+    }
+
+    async function loadStats(uid) {
+        let totalMessages = 0;
+        const channelsSet = new Set();
+        const contactsSet = new Set();
+
+        const roomPromises = roomNames.map(async (room) => {
+            const messagesRef = ref(db, `rooms/${room}/messages`);
+            const snapshot = await get(messagesRef);
+            if (snapshot.exists()) {
+                const messages = snapshot.val();
+                let roomHasUserMessage = false;
+                Object.values(messages).forEach(msg => {
+                    if (msg.senderId === uid) {
+                        totalMessages++;
+                        roomHasUserMessage = true;
+                        channelsSet.add(room);
+                    }
+                });
+                if (roomHasUserMessage) {
+                    Object.values(messages).forEach(msg => {
+                        if (msg.senderId && msg.senderId !== uid) {
+                            contactsSet.add(msg.senderId);
+                        }
+                    });
+                }
+            }
+        });
+
+        await Promise.all(roomPromises);
+
+        msgCountEl.textContent = totalMessages;
+        channelCountEl.textContent = channelsSet.size;
+        contactCountEl.textContent = contactsSet.size;
+    }
+
+    function renderUser(user) {
+        currentUser = user;
+        if (!user) {
+            window.location.href = "./login.html";
+            return;
+        }
+        const name = user.displayName || "User";
+        const email = user.email || "no-email@example.com";
+        const photoURL = user.photoURL || "";
+        currentPhotoURL = photoURL;
+        const username = getUsername(email);
+
+        displayNameEl.textContent = name;
+        displayUsernameEl.textContent = '@' + username;
+        displayEmailEl.textContent = email;
+
+        if (photoURL) {
+            avatarImage.src = photoURL;
+            avatarImage.style.display = 'block';
+            avatarInitial.style.display = 'none';
+        } else {
+            avatarImage.style.display = 'none';
+            avatarInitial.style.display = 'block';
+            avatarInitial.textContent = name.charAt(0).toUpperCase();
+        }
+
+        nameInput.value = name;
+        usernameInput.value = username;
+        photoInput.value = '';
+
+        loadStats(user.uid);
+    }
+
+    editBtn.addEventListener('click', () => {
+        editForm.style.display = 'block';
+        editError.textContent = '';
+        photoInput.value = '';
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        editForm.style.display = 'none';
+        editError.textContent = '';
+        photoInput.value = '';
+    });
+
+    saveBtn.addEventListener('click', async () => {
+        const newName = nameInput.value.trim();
+        const newUsername = usernameInput.value.trim();
+
+        if (!newName) {
+            editError.textContent = 'Name cannot be empty.';
+            return;
+        }
+        if (!newUsername) {
+            editError.textContent = 'Username cannot be empty.';
+            return;
+        }
+
+        try {
+            let newPhoto = currentPhotoURL;
+            const file = photoInput.files[0];
+            if (file) {
+                newPhoto = await readFileAsDataURL(file);
+            }
+
+            await updateProfile(auth.currentUser, {
+                displayName: newName,
+                photoURL: newPhoto || null
+            });
+
+            const saved = getStoredUser();
+            saved.fullname = newName;
+            saved.picture = newPhoto || '';
+            saved.username = newUsername;
+            localStorage.setItem('user', JSON.stringify(saved));
+
+            renderUser(auth.currentUser);
+            editForm.style.display = 'none';
+            editError.textContent = '';
+        } catch (e) {
+            editError.textContent = 'Error updating profile: ' + e.message;
+        }
+    });
+
+    signOutBtn.addEventListener('click', () => {
+        showNotify('Sign Out', 'Are you sure you want to log out?', 'warning', () => {
+            signOut(auth)
+                .then(() => { window.location.href = "./login.html"; })
+                .catch(e => showNotify('Error', e.message, 'error'));
+        });
+    });
+
+    deleteAccountBtn.addEventListener('click', () => {
+        showNotify('Delete Account', 'Permanently delete your account?', 'warning', () => {
+            const user = auth.currentUser;
+            if (!user) { showNotify('Error', 'No user found.', 'error'); return; }
+            deleteUser(user)
+                .then(() => {
+                    localStorage.removeItem('user');
+                    showNotify('Success', 'Account deleted.', 'success', () => {
+                        window.location.href = "./signup.html";
+                    });
+                })
+                .catch(e => {
+                    if (e.code === 'auth/requires-recent-login')
+                        showNotify('Error', 'Log in again before deleting.', 'error');
+                    else
+                        showNotify('Error', e.message, 'error');
+                });
+        });
+    });
+
+    notifToggle.addEventListener('click', () => {
+        const badge = notifToggle.querySelector('.badge-verbox');
+        if (badge.textContent === 'ON') {
+            badge.textContent = 'OFF';
+            badge.classList.remove('badge-verbox');
+            badge.classList.add('bg-secondary');
+        } else {
+            badge.textContent = 'ON';
+            badge.classList.add('badge-verbox');
+            badge.classList.remove('bg-secondary');
+        }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            renderUser(user);
+        } else {
+            window.location.href = "./login.html";
+        }
+    });
+</script>
+</body>
+</html>

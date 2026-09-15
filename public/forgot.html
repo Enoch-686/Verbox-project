@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password - Verbox</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="icon" type="image/svg+xml" href="./verbox-logo.svg">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow-y: auto; overflow-x: hidden;
+            background: #0D0B1E;
+        }
+
+        .bg-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background:
+                radial-gradient(ellipse 600px 600px at 15% 50%, rgba(255, 107, 91, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 600px 600px at 85% 50%, rgba(127, 182, 133, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 800px 200px at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
+                linear-gradient(170deg, #0D0B1E 0%, #151238 30%, #1A1744 60%, #12102D 100%);
+        }
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.03;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .floating-pairs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .msg-pair { position: absolute; display: flex; align-items: center; gap: 0; animation: messageTravel 12s infinite ease-in-out; }
+        .msg-left { width: 60px; height: 40px; background: rgba(255, 107, 91, 0.15); border: 1px solid rgba(255, 107, 91, 0.25); border-radius: 20px 20px 4px 20px; }
+        .msg-right { width: 60px; height: 40px; background: rgba(127, 182, 133, 0.15); border: 1px solid rgba(127, 182, 133, 0.25); border-radius: 20px 20px 20px 4px; }
+        .msg-dots { display: flex; gap: 6px; margin: 0 8px; }
+        .msg-dots span { width: 4px; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; animation: dotPulse 1.5s infinite ease-in-out; }
+        .msg-dots span:nth-child(2) { animation-delay: 0.3s; }
+        .msg-dots span:nth-child(3) { animation-delay: 0.6s; }
+        @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.8; transform: scale(1.3); } }
+        .msg-pair:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; animation-duration: 14s; }
+        .msg-pair:nth-child(2) { top: 35%; left: 55%; animation-delay: -4s; animation-duration: 16s; }
+        .msg-pair:nth-child(3) { top: 55%; left: 30%; animation-delay: -8s; animation-duration: 18s; flex-direction: row-reverse; }
+        .msg-pair:nth-child(4) { top: 70%; left: 60%; animation-delay: -6s; animation-duration: 13s; }
+        .msg-pair:nth-child(5) { top: 25%; left: 70%; animation-delay: -10s; animation-duration: 15s; flex-direction: row-reverse; }
+        @keyframes messageTravel { 0% { transform: translateX(-80px); opacity: 0.2; } 25% { opacity: 0.7; } 50% { transform: translateX(80px); opacity: 0.6; } 75% { opacity: 0.3; } 100% { transform: translateX(-80px); opacity: 0.2; } }
+
+        .person-orbs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); animation: orbBreathe 6s infinite ease-in-out; }
+        .orb-a { width: 300px; height: 300px; background: rgba(255, 107, 91, 0.08); top: 30%; left: -5%; }
+        .orb-b { width: 300px; height: 300px; background: rgba(127, 182, 133, 0.08); top: 30%; right: -5%; animation-delay: -3s; }
+        @keyframes orbBreathe { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.3); opacity: 1; } }
+
+        .main-container { position: relative; z-index: 10; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .login-card {
+            background: rgba(26, 23, 68, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 2.8rem 2.5rem; width: 100%; max-width: 440px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 80px rgba(45, 43, 85, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: cardEntry 0.8s ease-out;
+        }
+        @keyframes cardEntry { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .logo-container { text-align: center; margin-bottom: 0.5rem; }
+        .logo-icon { width: 56px; height: 56px; background: linear-gradient(135deg, #FF6B5B, #e85d4e); border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; box-shadow: 0 8px 25px rgba(255, 107, 91, 0.3); position: relative; }
+        .logo-icon::before { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 28px; height: 6px; background: #FF6B5B; border-radius: 3px 3px 0 0; }
+        .logo-icon i { font-size: 22px; color: #fff; margin-top: 4px; }
+        .logo-text { display: block; font-size: 1.8rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.5px; margin: 0; }
+        .logo-subtext { display: block; font-size: 0.78rem; color: rgba(255, 255, 255, 0.5); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+        .page-title { font-size: 1.1rem; font-weight: 600; color: rgba(255, 255, 255, 0.8); text-align: center; margin-bottom: 1.8rem; letter-spacing: 0.5px; }
+
+        .login-form { display: flex; flex-direction: column; gap: 0; }
+        .form-field { margin-bottom: 1.2rem; }
+        .form-field label { display: block; color: rgba(255, 255, 255, 0.65); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 0.4rem; }
+        .form-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #FFFFFF; border-radius: 12px; padding: 0.75rem 1rem; font-size: 0.95rem; font-family: 'Inter', sans-serif; transition: all 0.3s ease; outline: none; line-height: 1.5; }
+        .form-input:focus { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 107, 91, 0.5); box-shadow: 0 0 0 3px rgba(255, 107, 91, 0.1); }
+        .form-input::placeholder { color: rgba(255, 255, 255, 0.25); }
+        .error-message { display: block; color: #FF6B5B; font-size: 0.75rem; margin-top: 0.3rem; min-height: 1rem; }
+
+        .submit-btn { background: linear-gradient(135deg, #FF6B5B, #e85d4e); border: none; color: #fff; font-weight: 600; font-size: 1rem; font-family: 'Inter', sans-serif; padding: 0.8rem; border-radius: 12px; letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(255, 107, 91, 0.25); width: 100%; }
+        .submit-btn:hover { background: linear-gradient(135deg, #FF7B6B, #FF6B5B); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255, 107, 91, 0.35); }
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .links-container { text-align: center; margin-top: 1.5rem; }
+        .back-to-login { color: rgba(255, 255, 255, 0.5); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+        .back-to-login:hover { color: #FF6B5B; }
+
+        .two-way-indicator { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem; }
+        .person-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .person-you { background: rgba(255, 107, 91, 0.2); border: 1.5px solid rgba(255, 107, 91, 0.4); color: #FF6B5B; }
+        .person-other { background: rgba(127, 182, 133, 0.2); border: 1.5px solid rgba(127, 182, 133, 0.4); color: #7FB685; }
+        .two-way-arrow { color: rgba(255, 255, 255, 0.2); font-size: 14px; animation: arrowPulse 1.5s infinite ease-in-out; }
+        @keyframes arrowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        .two-way-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); }
+
+        .btn-verbox { background: linear-gradient(135deg, #FF6B5B, #e85d4e); border: none; color: #fff; font-weight: 600; }
+        .btn-verbox:hover { background: linear-gradient(135deg, #FF7B6B, #FF6B5B); color: #fff; }
+
+        /* ===== BEAUTIFIED MODAL ===== */
+        .modal-content.bg-dark {
+            background: rgba(26, 23, 68, 0.95) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
+        .icon-circle {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem auto;
+        }
+        .icon-circle.success { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .icon-circle.error { background: rgba(255,107,91,0.15); color: #FF6B5B; }
+
+        @media (max-width: 576px) {
+            .login-card { margin: 1rem; padding: 2rem 1.5rem; border-radius: 20px; }
+            .logo-text { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-wrapper"></div>
+<div class="grid-overlay"></div>
+<div class="person-orbs"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
+<div class="floating-pairs">
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+</div>
+
+<div class="main-container">
+    <div class="login-card">
+
+        <div class="logo-container">
+            <div class="logo-icon"><i class="bi bi-chat-dots-fill"></i></div>
+            <span class="logo-text">Verbox</span>
+            <span class="logo-subtext">The Vessel For Your Words</span>
+        </div>
+
+        <div class="two-way-indicator">
+            <div class="person-icon person-you"><i class="bi bi-person-fill"></i></div>
+            <span class="two-way-line"></span>
+            <span class="two-way-arrow"><i class="bi bi-arrow-left-right"></i></span>
+            <span class="two-way-line"></span>
+            <div class="person-icon person-other"><i class="bi bi-person-fill"></i></div>
+        </div>
+
+        <h1 class="page-title">Reset your password</h1>
+
+        <p class="text-center text-white-50 small mb-4">Enter your email and we'll send you a reset link.</p>
+
+        <form class="login-form" id="forgotForm" novalidate>
+            <div class="form-field">
+                <label for="email">Email address</label>
+                <input type="email" id="email" class="form-input" required placeholder="you@example.com">
+                <span id="emailError" class="error-message"></span>
+            </div>
+
+            <button type="submit" id="resetBtn" class="submit-btn"><i class="bi bi-envelope-fill me-2"></i>Send Reset Link</button>
+        </form>
+
+        <div class="links-container">
+            <a href="./login.html" class="back-to-login"><i class="bi bi-arrow-left me-1"></i>Back to login</a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== BEAUTIFIED NOTIFICATION MODAL ===== -->
+<div class="modal fade" id="notifyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-secondary">
+      <div class="modal-body text-center py-4">
+        <!-- Dynamic icon -->
+        <div id="notifyIcon" class="icon-circle success mb-3">
+          <i id="notifyIconInner" class="bi bi-check-circle-fill fs-1"></i>
+        </div>
+        <h6 id="notifyModalTitle" class="fw-bold mb-2"></h6>
+        <p id="notifyModalBody" class="text-white-50 small mb-3"></p>
+        <!-- Spam folder note (visible on success) -->
+        <p id="spamNote" class="text-white-50 small mb-0" style="display:none;">
+          <i class="bi bi-info-circle"></i> Check your spam folder if you don't see the email.
+        </p>
+      </div>
+      <div class="modal-footer border-secondary justify-content-center">
+        <button type="button" class="btn btn-verbox px-4" id="notifyModalOk">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ===== SAFE HTML ESCAPE =====
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // ===== MODAL HELPERS =====
+    const notifyModal = new bootstrap.Modal(document.getElementById('notifyModal'));
+    const notifyIconEl = document.getElementById('notifyIcon');
+    const notifyIconInner = document.getElementById('notifyIconInner');
+    const notifyModalTitle = document.getElementById('notifyModalTitle');
+    const notifyModalBody = document.getElementById('notifyModalBody');
+    const notifyModalOk = document.getElementById('notifyModalOk');
+    const spamNote = document.getElementById('spamNote');
+
+    function showNotify(title, message, type, callback) {
+        notifyModalTitle.textContent = title;
+        notifyModalBody.innerHTML = message;      // use innerHTML for bold etc.
+        
+        // Set icon based on type
+        if (type === 'success') {
+            notifyIconEl.className = 'icon-circle success mb-3';
+            notifyIconInner.className = 'bi bi-check-circle-fill fs-1';
+            spamNote.style.display = 'block';
+        } else if (type === 'error') {
+            notifyIconEl.className = 'icon-circle error mb-3';
+            notifyIconInner.className = 'bi bi-exclamation-circle-fill fs-1';
+            spamNote.style.display = 'none';
+        } else {
+            notifyIconEl.className = 'icon-circle success mb-3';
+            notifyIconInner.className = 'bi bi-info-circle-fill fs-1';
+            spamNote.style.display = 'block';
+        }
+        
+        notifyModal.show();
+        
+        notifyModalOk.onclick = () => {
+            notifyModal.hide();
+            if (callback) callback();
+        };
+    }
+
+    // ===== COOLDOWN TIMER =====
+    const resetBtn = document.getElementById('resetBtn');
+    let cooldown = false;
+    const originalBtnHTML = resetBtn.innerHTML;
+
+    function startCooldown() {
+        cooldown = true;
+        resetBtn.disabled = true;
+        let sec = 60;
+        const timer = setInterval(() => {
+            sec--;
+            resetBtn.innerHTML = `<i class="bi bi-hourglass-split me-2"></i> Wait ${sec}s`;
+            if (sec <= 0) {
+                clearInterval(timer);
+                resetBtn.disabled = false;
+                resetBtn.innerHTML = originalBtnHTML;
+                cooldown = false;
+            }
+        }, 1000);
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    import firebaseConfig from './firebase-config.js';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    document.getElementById("forgotForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        // Prevent spam if cooldown is active
+        if (cooldown) return;
+
+        const email = document.getElementById("email").value.trim();
+        const emailError = document.getElementById("emailError");
+        emailError.textContent = "";
+
+        if (!email || !email.includes("@")) {
+            emailError.textContent = "Please enter a valid email address.";
+            return;
+        }
+
+        // Start the button cooldown
+        startCooldown();
+
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                const safeEmail = escapeHtml(email);
+                showNotify(
+                    "Email Sent!",
+                    `We've sent a password reset link to <strong>${safeEmail}</strong>.`,
+                    "success",
+                    () => {
+                        window.location.href = "./login.html";
+                    }
+                );
+            })
+            .catch((error) => {
+                let message = error.message;
+                if (error.code === "auth/user-not-found") {
+                    message = "No account found with this email address.";
+                } else if (error.code === "auth/invalid-email") {
+                    message = "Please enter a valid email address.";
+                } else if (error.code === "auth/too-many-requests") {
+                    message = "You’ve tried too many times. Please wait a minute before requesting another reset link.";
+                }
+                showNotify("Oops!", message, "error");
+            });
+    });
+</script>
+
+</body>
+</html>

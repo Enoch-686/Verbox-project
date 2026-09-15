@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat - Verbox</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="./verbox-logo.svg">
+    <style>
+        :root {
+            --bg-primary: #0D0B1E;
+            --bg-secondary: rgba(26, 23, 68, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --hover-bg: rgba(255, 255, 255, 0.05);
+            --active-bg: rgba(255, 107, 91, 0.1);
+            --message-bg: rgba(255, 255, 255, 0.08);
+            --brand-gradient: linear-gradient(135deg, #FF6B5B, #e85d4e);
+            --sidebar-bg: rgba(26, 23, 68, 0.7);
+        }
+        .light-mode {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: rgba(255, 255, 255, 0.9);
+            --text-primary: #1a1a2e;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.05);
+            --input-border: rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+            --active-bg: rgba(255, 107, 91, 0.15);
+            --message-bg: rgba(0, 0, 0, 0.05);
+            --brand-gradient: linear-gradient(135deg, #FF6B5B, #e85d4e);
+            --sidebar-bg: rgba(255, 255, 255, 0.9);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+        .bg-animated {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background: radial-gradient(ellipse 600px 600px at 15% 50%, rgba(255,107,91,0.12) 0%, transparent 70%),
+                        radial-gradient(ellipse 600px 600px at 85% 50%, rgba(127,182,133,0.12) 0%, transparent 70%),
+                        radial-gradient(ellipse 800px 200px at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%),
+                        linear-gradient(170deg, #0D0B1E 0%, #151238 30%, #1A1744 60%, #12102D 100%);
+        }
+        .light-mode .bg-animated {
+            background: radial-gradient(ellipse 600px 600px at 15% 50%, rgba(255,107,91,0.05) 0%, transparent 70%),
+                        radial-gradient(ellipse 600px 600px at 85% 50%, rgba(127,182,133,0.05) 0%, transparent 70%),
+                        radial-gradient(ellipse 800px 200px at 50% 50%, rgba(0,0,0,0.02) 0%, transparent 70%),
+                        linear-gradient(170deg, #f0f2f5 0%, #e4e7eb 30%, #f0f2f5 60%, #e4e7eb 100%);
+        }
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.03; pointer-events: none;
+            background-image: linear-gradient(var(--text-secondary) 1px, transparent 1px), linear-gradient(90deg, var(--text-secondary) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .app-container { position: relative; z-index: 2; display: flex; height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .brand { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .brand-logo-icon {
+            width: 40px; height: 40px;
+            background: var(--brand-gradient);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(255,107,91,0.3);
+            overflow: hidden;
+        }
+        .brand-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-name { font-weight: 700; font-size: 1.3rem; letter-spacing: -0.3px; color: var(--text-primary); }
+        .sidebar-actions { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; }
+        .sidebar-actions a, .sidebar-actions button {
+            color: var(--text-secondary);
+            transition: color 0.2s;
+            background: none; border: none;
+            cursor: pointer;
+            font-size: 1rem; padding: 4px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .sidebar-actions a:hover, .sidebar-actions button:hover { color: #FF6B5B; background: var(--hover-bg); }
+        .user-profile { display: flex; align-items: center; gap: 0.75rem; padding: 0 0 1.25rem 0; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; }
+        .user-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--brand-gradient);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 0.9rem; color: #fff;
+            position: relative;
+        }
+        .status-dot { width: 8px; height: 8px; background: #22c55e; border: 2px solid var(--bg-secondary); border-radius: 50%; position: absolute; bottom: 0; right: 0; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+        .user-status { font-size: 0.7rem; color: #22c55e; }
+        .rooms-header { margin-bottom: 0.75rem; }
+        .rooms-header span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); opacity: 0.7; }
+        .room-list { list-style: none; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; }
+        .room-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+        .room-item:hover { background: var(--hover-bg); }
+        .room-item.active { background: var(--active-bg); }
+        .room-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; background: rgba(255,107,91,0.15); color: #FF6B5B; }
+        .room-info { flex: 1; min-width: 0; }
+        .room-name { font-size: 0.85rem; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .room-desc { font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .room-badge { font-size: 0.65rem; font-weight: 600; background: rgba(34,197,94,0.15); color: #22c55e; padding: 0.15rem 0.5rem; border-radius: 20px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; transition: background 0.3s; }
+        .empty-state { text-align: center; }
+        .empty-state i { font-size: 3rem; color: var(--text-secondary); opacity: 0.3; margin-bottom: 1.5rem; }
+        .empty-state h2 { font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+        .empty-state p { color: var(--text-secondary); max-width: 300px; margin: 0 auto; }
+        .chat-area { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 800px; margin: 0 auto; }
+        .chat-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+        .chat-header h4 { margin: 0; font-weight: 700; color: var(--text-primary); }
+        .online-users { font-size: 0.8rem; color: var(--text-secondary); }
+        .message-area { flex: 1; overflow-y: auto; padding: 0.5rem; background: var(--input-bg); border-radius: 16px; margin-bottom: 1rem; display: flex; flex-direction: column; }
+        /* Message alignment */
+        .message-bubble {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 16px;
+            margin-bottom: 0.5rem;
+            max-width: 75%;
+            word-wrap: break-word;
+            transition: background 0.2s;
+        }
+        .message-bubble.own-message {
+            margin-left: auto;
+            background: var(--brand-gradient);
+            color: #fff;
+        }
+        .message-bubble.other-message {
+            margin-right: auto;
+            background: var(--message-bg);
+            color: var(--text-primary);
+        }
+        .message-bubble .sender { font-weight: 600; font-size: 0.8rem; color: inherit; }
+        .message-bubble .text { margin-top: 0.2rem; }
+        .message-bubble .timestamp { font-size: 0.65rem; margin-top: 0.3rem; opacity: 0.8; }
+        .message-bubble .reply-context { font-size: 0.7rem; background: rgba(0,0,0,0.1); padding: 0.2rem 0.5rem; border-radius: 8px; margin-bottom: 0.3rem; display: inline-block; }
+        .message-bubble .message-actions {
+            position: absolute;
+            top: 0.3rem; right: 0.3rem;
+            display: none;
+            gap: 4px;
+        }
+        .message-bubble:hover .message-actions { display: flex; }
+        .message-actions button {
+            background: none; border: none;
+            color: rgba(255,255,255,0.8);
+            padding: 2px 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .message-actions button:hover { color: #fff; background: rgba(0,0,0,0.2); }
+        .reply-preview {
+            background: var(--active-bg);
+            padding: 0.4rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.8rem;
+        }
+        .reply-preview .reply-text { flex: 1; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .reply-preview .cancel-reply { cursor: pointer; color: #FF6B5B; margin-left: 0.5rem; }
+        .edit-input { width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); border-radius: 8px; padding: 0.3rem 0.6rem; font-size: 0.9rem; }
+        .edit-actions { display: flex; gap: 0.3rem; margin-top: 0.3rem; }
+        .edit-actions button { background: var(--brand-gradient); border: none; color: white; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.75rem; cursor: pointer; }
+        .message-input-group { display: flex; gap: 0.5rem; }
+        .message-input-group input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-primary);
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            outline: none;
+        }
+        .message-input-group input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+        .message-input-group button {
+            background: var(--brand-gradient);
+            border: none; color: #fff;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600; cursor: pointer;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 10px; }
+    </style>
+</head>
+<body>
+<div class="bg-animated"></div>
+<div class="bg-grid"></div>
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo-icon">
+                <img src="./verbox-logo.svg" alt="Verbox">
+            </div>
+            <span class="brand-name">Verbox</span>
+            <div class="sidebar-actions">
+                <button id="themeToggleBtn" title="Toggle light/dark mode"><i id="themeIcon" class="bi bi-sun-fill"></i></button>
+                <a href="./profile.html" title="Profile"><i class="bi bi-person-circle"></i></a>
+                <a href="#" id="sidebarLogout" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="user-profile" id="sidebarUserProfile">
+            <div class="user-avatar" id="sidebarAvatar">A</div>
+            <div class="user-info">
+                <div class="user-name" id="sidebarUserName">Loading...</div>
+                <div class="user-status"><i class="bi bi-circle-fill me-1" style="font-size: 0.4rem; color: #22c55e;"></i> Online</div>
+            </div>
+        </div>
+        <div class="rooms-header"><span>Rooms</span></div>
+        <!-- UPDATED ROOM LIST: GENERAL, SPORTS, POLITICS, MOVIES & ANIME, MUSIC -->
+        <ul class="room-list" id="roomList">
+            <li class="room-item" data-room="GENERAL">
+                <div class="room-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                <div class="room-info">
+                    <div class="room-name">GENERAL</div>
+                    <div class="room-desc">Anything goes</div>
+                </div>
+                <span class="room-badge" id="badge-GENERAL">0 online</span>
+            </li>
+            <li class="room-item" data-room="SPORTS">
+                <div class="room-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                <div class="room-info">
+                    <div class="room-name">SPORTS</div>
+                    <div class="room-desc">Game day talk</div>
+                </div>
+                <span class="room-badge" id="badge-SPORTS">0 online</span>
+            </li>
+            <li class="room-item" data-room="POLITICS">
+                <div class="room-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                <div class="room-info">
+                    <div class="room-name">POLITICS</div>
+                    <div class="room-desc">Current events — keep it civil</div>
+                </div>
+                <span class="room-badge" id="badge-POLITICS">0 online</span>
+            </li>
+            <li class="room-item" data-room="MOVIES & ANIME">
+                <div class="room-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                <div class="room-info">
+                    <div class="room-name">MOVIES & ANIME</div>
+                    <div class="room-desc">Film, series & otaku talk</div>
+                </div>
+                <span class="room-badge" id="badge-MOVIES & ANIME">0 online</span>
+            </li>
+            <li class="room-item" data-room="MUSIC">
+                <div class="room-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                <div class="room-info">
+                    <div class="room-name">MUSIC</div>
+                    <div class="room-desc">Tunes & playlists</div>
+                </div>
+                <span class="room-badge" id="badge-MUSIC">0 online</span>
+            </li>
+        </ul>
+    </aside>
+    <main class="main-content" id="mainContent">
+        <div class="empty-state" id="emptyState">
+            <i class="bi bi-chat-dots"></i>
+            <h2>Select a room to start chatting</h2>
+            <p>Choose one of the five rooms from the sidebar to jump into a conversation.</p>
+        </div>
+        <div class="chat-area" id="chatArea" style="display: none;">
+            <div class="chat-header">
+                <h4><i class="bi bi-hash text-verbox"></i> <span id="activeRoomName"></span></h4>
+                <div class="online-users" id="onlineUsers"></div>
+            </div>
+            <div class="message-area" id="messageArea"></div>
+            <div id="replyPreview" class="reply-preview" style="display: none;">
+                <div class="reply-text" id="replyText"></div>
+                <span class="cancel-reply" id="cancelReply"><i class="bi bi-x-lg"></i></span>
+            </div>
+            <div class="message-input-group">
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button id="sendMessageBtn"><i class="bi bi-send-fill"></i> Send</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Theme toggle
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    if (localStorage.getItem('verbox-theme') === 'light') {
+        document.body.classList.add('light-mode');
+        themeIcon.className = 'bi bi-moon-fill';
+    } else {
+        themeIcon.className = 'bi bi-sun-fill';
+    }
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        localStorage.setItem('verbox-theme', isLight ? 'light' : 'dark');
+        themeIcon.className = isLight ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+    });
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    import { getDatabase, ref, set, onValue, push, remove, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+    import firebaseConfig from './firebase-config.js';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getDatabase(app);
+
+    // DOM elements
+    const roomList = document.getElementById('roomList');
+    const emptyState = document.getElementById('emptyState');
+    const chatArea = document.getElementById('chatArea');
+    const activeRoomName = document.getElementById('activeRoomName');
+    const messageArea = document.getElementById('messageArea');
+    const messageInput = document.getElementById('messageInput');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const onlineUsersDiv = document.getElementById('onlineUsers');
+    const replyPreview = document.getElementById('replyPreview');
+    const replyText = document.getElementById('replyText');
+    const cancelReply = document.getElementById('cancelReply');
+    const sidebarUserName = document.getElementById('sidebarUserName');
+    const sidebarAvatar = document.getElementById('sidebarAvatar');
+    const sidebarLogout = document.getElementById('sidebarLogout');
+
+    let currentUser = null;
+    let currentRoom = null;
+    let messagesListener = null;
+    let presenceListener = null;
+    let presenceRef = null;
+    let replyTo = null;
+
+    // Updated room names array (matches the five items)
+    const roomNames = ["GENERAL", "SPORTS", "POLITICS", "MOVIES & ANIME", "MUSIC"];
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = "./login.html";
+            return;
+        }
+        currentUser = user;
+        updateSidebarProfile(user);
+        setupEventListeners();
+        // Initialize room badges
+        roomNames.forEach(room => {
+            const badge = document.getElementById(`badge-${room}`);
+            if (badge) badge.textContent = '0 online';
+        });
+    });
+
+    function updateSidebarProfile(user) {
+        const name = user.displayName || "User";
+        sidebarUserName.textContent = name;
+        sidebarAvatar.textContent = name.charAt(0).toUpperCase();
+    }
+
+    function setupEventListeners() {
+        document.querySelectorAll('.room-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const roomName = item.getAttribute('data-room');
+                if (roomName) joinRoom(roomName);
+            });
+        });
+
+        sidebarLogout.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to log out?')) {
+                await leaveCurrentRoom();
+                await signOut(auth);
+                window.location.href = "./login.html";
+            }
+        });
+
+        sendMessageBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        cancelReply.addEventListener('click', () => { replyTo = null; replyPreview.style.display = 'none'; });
+    }
+
+    async function joinRoom(roomName) {
+        if (currentRoom === roomName) return;
+        await leaveCurrentRoom();
+
+        // Ensure room exists in database
+        await set(ref(db, `rooms/${roomName}/description`), 'Group chat');
+
+        presenceRef = ref(db, `rooms/${roomName}/presence/${currentUser.uid}`);
+        await set(presenceRef, {
+            displayName: currentUser.displayName || currentUser.email,
+            joinedAt: serverTimestamp()
+        });
+
+        const presencePath = ref(db, `rooms/${roomName}/presence`);
+        presenceListener = onValue(presencePath, (snap) => {
+            const users = [];
+            if (snap.exists()) {
+                const presences = snap.val();
+                Object.values(presences).forEach(p => users.push(p.displayName));
+            }
+            onlineUsersDiv.textContent = `${users.length} online: ${users.join(', ')}`;
+            const badge = document.getElementById(`badge-${roomName}`);
+            if (badge) badge.textContent = `${users.length} online`;
+        });
+
+        const messagesRef = ref(db, `rooms/${roomName}/messages`);
+        messagesListener = onValue(messagesRef, (snap) => {
+            messageArea.innerHTML = '';
+            if (snap.exists()) {
+                const messagesObj = snap.val();
+                const messagesArray = Object.entries(messagesObj).map(([key, data]) => ({ id: key, ...data }));
+                messagesArray.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                messagesArray.forEach(msg => renderMessage(msg));
+            }
+            messageArea.scrollTop = messageArea.scrollHeight;
+        });
+
+        currentRoom = roomName;
+        activeRoomName.textContent = roomName;
+        emptyState.style.display = 'none';
+        chatArea.style.display = 'flex';
+        highlightRoomInList(roomName);
+    }
+
+    function renderMessage(msg) {
+        const div = document.createElement('div');
+        div.className = 'message-bubble';
+        div.setAttribute('data-message-id', msg.id);
+
+        if (msg.senderId === currentUser?.uid) {
+            div.classList.add('own-message');
+        } else {
+            div.classList.add('other-message');
+        }
+
+        let replyHTML = '';
+        if (msg.replyTo) {
+            replyHTML = `<div class="reply-context"><i class="bi bi-reply-fill"></i> @${msg.replyTo.sender}: ${msg.replyTo.text}</div>`;
+        }
+
+        const date = new Date(msg.timestamp || 0);
+        const timeStr = date.toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric', hour12: true });
+
+        div.innerHTML = `
+            ${replyHTML}
+            <div class="sender">${msg.sender}</div>
+            <div class="text">${msg.text}</div>
+            <div class="timestamp">${timeStr}</div>
+        `;
+
+        if (msg.senderId === currentUser?.uid) {
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'message-actions';
+            actionsDiv.innerHTML = `
+                <button class="reply-btn" title="Reply"><i class="bi bi-reply-fill"></i></button>
+                <button class="edit-btn" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+                <button class="delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>
+            `;
+            div.appendChild(actionsDiv);
+
+            const replyBtn = actionsDiv.querySelector('.reply-btn');
+            const editBtn = actionsDiv.querySelector('.edit-btn');
+            const deleteBtn = actionsDiv.querySelector('.delete-btn');
+
+            replyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                replyTo = { id: msg.id, sender: msg.sender, text: msg.text };
+                replyText.textContent = `Replying to @${msg.sender}: ${msg.text}`;
+                replyPreview.style.display = 'flex';
+            });
+
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                startEditMessage(div, msg);
+            });
+
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm('Delete this message?')) {
+                    remove(ref(db, `rooms/${currentRoom}/messages/${msg.id}`));
+                }
+            });
+        }
+
+        messageArea.appendChild(div);
+    }
+
+    function startEditMessage(bubble, msg) {
+        const textDiv = bubble.querySelector('.text');
+        const originalText = textDiv.textContent;
+        textDiv.innerHTML = `<input type="text" class="edit-input" value="${originalText}" />`;
+        const editActions = document.createElement('div');
+        editActions.className = 'edit-actions';
+        editActions.innerHTML = `<button class="save-edit-btn">Save</button><button class="cancel-edit-btn">Cancel</button>`;
+        textDiv.appendChild(editActions);
+
+        const input = textDiv.querySelector('.edit-input');
+        input.focus();
+
+        const saveBtn = editActions.querySelector('.save-edit-btn');
+        const cancelBtn = editActions.querySelector('.cancel-edit-btn');
+
+        saveBtn.addEventListener('click', async () => {
+            const newText = input.value.trim();
+            if (newText && newText !== originalText) {
+                await update(ref(db, `rooms/${currentRoom}/messages/${msg.id}`), { text: newText, edited: true });
+            }
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            textDiv.innerHTML = originalText;
+        });
+    }
+
+    function highlightRoomInList(roomName) {
+        document.querySelectorAll('.room-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('data-room') === roomName) item.classList.add('active');
+        });
+    }
+
+    async function leaveCurrentRoom() {
+        if (presenceRef) { await remove(presenceRef); presenceRef = null; }
+        if (presenceListener) { presenceListener(); presenceListener = null; }
+        if (messagesListener) { messagesListener(); messagesListener = null; }
+        if (currentRoom) {
+            const badge = document.getElementById(`badge-${currentRoom}`);
+            if (badge) badge.textContent = '0 online';
+        }
+        currentRoom = null;
+        chatArea.style.display = 'none';
+        emptyState.style.display = 'block';
+        activeRoomName.textContent = '';
+        onlineUsersDiv.textContent = '';
+        messageArea.innerHTML = '';
+        replyTo = null;
+        replyPreview.style.display = 'none';
+    }
+
+    async function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text || !currentRoom || !currentUser) return;
+
+        const messageData = {
+            sender: currentUser.displayName || currentUser.email,
+            senderId: currentUser.uid,
+            text: text,
+            timestamp: Date.now()
+        };
+        if (replyTo) {
+            messageData.replyTo = { sender: replyTo.sender, text: replyTo.text };
+            replyTo = null;
+            replyPreview.style.display = 'none';
+        }
+
+        try {
+            const messagesRef = ref(db, `rooms/${currentRoom}/messages`);
+            await push(messagesRef, messageData);
+            messageInput.value = '';
+        } catch (e) {
+            console.error('Send error:', e);
+        }
+    }
+
+    window.addEventListener('beforeunload', () => {
+        if (presenceRef) remove(presenceRef);
+    });
+</script>
+</body>
+</html>

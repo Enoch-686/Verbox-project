@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Create account - Verbox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="./verbox-logo.svg">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; height:100vh; overflow-y:auto; overflow-x:hidden; background:#0D0B1E; }
+        .bg-wrapper { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0;
+            background: radial-gradient(ellipse 600px 600px at 15% 50%, rgba(255,107,91,0.12) 0%, transparent 70%),
+                        radial-gradient(ellipse 600px 600px at 85% 50%, rgba(127,182,133,0.12) 0%, transparent 70%),
+                        radial-gradient(ellipse 800px 200px at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%),
+                        linear-gradient(170deg, #0D0B1E 0%, #151238 30%, #1A1744 60%, #12102D 100%); }
+        .grid-overlay { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; opacity:0.03;
+            background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+            background-size:50px 50px; }
+        .floating-pairs { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none; }
+        .msg-pair { position:absolute; display:flex; align-items:center; gap:0; animation:messageTravel 12s infinite ease-in-out; }
+        .msg-left { width:60px; height:40px; background:rgba(255,107,91,0.15); border:1px solid rgba(255,107,91,0.25); border-radius:20px 20px 4px 20px; }
+        .msg-right { width:60px; height:40px; background:rgba(127,182,133,0.15); border:1px solid rgba(127,182,133,0.25); border-radius:20px 20px 20px 4px; }
+        .msg-dots { display:flex; gap:6px; margin:0 8px; }
+        .msg-dots span { width:4px; height:4px; background:rgba(255,255,255,0.2); border-radius:50%; animation:dotPulse 1.5s infinite ease-in-out; }
+        .msg-dots span:nth-child(2) { animation-delay:0.3s; } .msg-dots span:nth-child(3) { animation-delay:0.6s; }
+        @keyframes dotPulse { 0%,100% { opacity:0.2; transform:scale(0.8); } 50% { opacity:0.8; transform:scale(1.3); } }
+        .msg-pair:nth-child(1) { top:15%; left:20%; animation-delay:0s; animation-duration:14s; }
+        .msg-pair:nth-child(2) { top:35%; left:55%; animation-delay:-4s; animation-duration:16s; }
+        .msg-pair:nth-child(3) { top:55%; left:30%; animation-delay:-8s; animation-duration:18s; flex-direction:row-reverse; }
+        .msg-pair:nth-child(4) { top:70%; left:60%; animation-delay:-6s; animation-duration:13s; }
+        .msg-pair:nth-child(5) { top:25%; left:70%; animation-delay:-10s; animation-duration:15s; flex-direction:row-reverse; }
+        @keyframes messageTravel { 0% { transform:translateX(-80px); opacity:0.2; } 25% { opacity:0.7; } 50% { transform:translateX(80px); opacity:0.6; } 75% { opacity:0.3; } 100% { transform:translateX(-80px); opacity:0.2; } }
+        .person-orbs { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+        .orb { position:absolute; border-radius:50%; filter:blur(80px); animation:orbBreathe 6s infinite ease-in-out; }
+        .orb-a { width:300px; height:300px; background:rgba(255,107,91,0.08); top:30%; left:-5%; }
+        .orb-b { width:300px; height:300px; background:rgba(127,182,133,0.08); top:30%; right:-5%; animation-delay:-3s; }
+        @keyframes orbBreathe { 0%,100% { transform:scale(1); opacity:0.6; } 50% { transform:scale(1.3); opacity:1; } }
+        .main-container { position:relative; z-index:10; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; }
+        .login-card { background:rgba(26,23,68,0.7); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:2.8rem 2.5rem; width:100%; max-width:440px;
+            box-shadow:0 25px 60px rgba(0,0,0,0.4), 0 0 80px rgba(45,43,85,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+            animation:cardEntry 0.8s ease-out; }
+        @keyframes cardEntry { from { opacity:0; transform:translateY(30px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .logo-container { text-align:center; margin-bottom:0.5rem; }
+        .logo-icon { width:56px; height:56px; background:linear-gradient(135deg, #FF6B5B, #e85d4e); border-radius:14px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:1rem; box-shadow:0 8px 25px rgba(255,107,91,0.3); position:relative; }
+        .logo-icon::before { content:''; position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:28px; height:6px; background:#FF6B5B; border-radius:3px 3px 0 0; }
+        .logo-icon i { font-size:22px; color:#fff; margin-top:4px; }
+        .logo-text { display:block; font-size:1.8rem; font-weight:700; color:#FFFFFF; letter-spacing:-0.5px; margin:0; }
+        .logo-subtext { display:block; font-size:0.78rem; color:rgba(255,255,255,0.5); font-weight:400; letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+        .page-title { font-size:1.1rem; font-weight:600; color:rgba(255,255,255,0.8); text-align:center; margin-bottom:1.8rem; letter-spacing:0.5px; }
+        .signup-form { display:flex; flex-direction:column; gap:0; }
+        .form-field { margin-bottom:1.2rem; }
+        .form-field label { display:block; color:rgba(255,255,255,0.65); font-size:0.78rem; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:0.4rem; }
+        .form-input { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#FFFFFF; border-radius:12px; padding:0.75rem 1rem; font-size:0.95rem; font-family:'Inter', sans-serif; transition:all 0.3s ease; outline:none; line-height:1.5; }
+        .form-input:focus { background:rgba(255,255,255,0.08); border-color:rgba(255,107,91,0.5); box-shadow:0 0 0 3px rgba(255,107,91,0.1); }
+        .form-input::placeholder { color:rgba(255,255,255,0.25); }
+        .error-message { display:block; color:#FF6B5B; font-size:0.75rem; margin-top:0.3rem; min-height:1rem; }
+        .password-wrapper { position:relative; display:flex; align-items:center; }
+        .password-wrapper .form-input { padding-right:3rem; }
+        .password-toggle-btn { position:absolute; right:4px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; padding:8px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition:all 0.2s ease; z-index:5; line-height:0; }
+        .password-toggle-btn:hover { color:rgba(255,255,255,0.75); background:rgba(255,255,255,0.06); }
+        .password-toggle-btn i { font-size:18px; }
+        .submit-btn { background:linear-gradient(135deg, #FF6B5B, #e85d4e); border:none; color:#fff; font-weight:600; font-size:1rem; font-family:'Inter', sans-serif; padding:0.8rem; border-radius:12px; letter-spacing:0.5px; cursor:pointer; transition:all 0.3s ease; box-shadow:0 6px 20px rgba(255,107,91,0.25); width:100%; }
+        .submit-btn:hover { background:linear-gradient(135deg, #FF7B6B, #FF6B5B); transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,107,91,0.35); }
+        .submit-btn:active { transform:translateY(0); }
+        .divider-container { display:flex; align-items:center; gap:12px; margin:1.5rem 0; }
+        .divider-line { flex:1; height:1px; background:rgba(255,255,255,0.1); }
+        .divider-text { color:rgba(255,255,255,0.35); font-size:0.75rem; font-weight:500; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+        .sso-btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:0.7rem; border-radius:12px; font-family:'Inter', sans-serif; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.3s ease; }
+        .google-btn { background:#ffffff; border:1px solid #dadce0; color:#3c4043; margin-bottom:0.8rem; }
+        .google-btn:hover { background:#f1f3f4; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+        .github-btn { background:#24292e; border:1px solid #444d56; color:#ffffff; }
+        .github-btn:hover { background:#2f363d; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+        .sso-icon { width:20px; height:20px; flex-shrink:0; }
+        .links-container { text-align:center; margin-top:1.5rem; }
+        .login-text { color:rgba(255,255,255,0.4); font-size:0.85rem; margin:0; }
+        .login-link { color:#FF6B5B; text-decoration:none; font-weight:500; transition:color 0.2s; }
+        .login-link:hover { color:#FF8E7B; }
+        .two-way-indicator { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:0.5rem; }
+        .person-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; }
+        .person-you { background:rgba(255,107,91,0.2); border:1.5px solid rgba(255,107,91,0.4); color:#FF6B5B; }
+        .person-other { background:rgba(127,182,133,0.2); border:1.5px solid rgba(127,182,133,0.4); color:#7FB685; }
+        .two-way-arrow { color:rgba(255,255,255,0.2); font-size:14px; animation:arrowPulse 1.5s infinite ease-in-out; }
+        @keyframes arrowPulse { 0%,100% { opacity:0.3; } 50% { opacity:0.8; } }
+        .two-way-line { flex:1; height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); }
+        .btn-verbox { background: linear-gradient(135deg, #FF6B5B, #e85d4e); border: none; color: #fff; font-weight: 600; }
+        .btn-verbox:hover { background: linear-gradient(135deg, #FF7B6B, #FF6B5B); color: #fff; }
+
+        /* Beautified modal */
+        .modal-content.bg-dark {
+            background: rgba(26, 23, 68, 0.95) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
+        .icon-circle {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem auto;
+        }
+        .icon-circle.success { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .icon-circle.error { background: rgba(255,107,91,0.15); color: #FF6B5B; }
+
+        @media (max-width:576px) { .login-card { margin:1rem; padding:2rem 1.5rem; border-radius:20px; } .logo-text { font-size:1.5rem; } }
+    </style>
+</head>
+<body>
+<div class="bg-wrapper"></div><div class="grid-overlay"></div><div class="person-orbs"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
+<div class="floating-pairs">
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+    <div class="msg-pair"><div class="msg-left"></div><div class="msg-dots"><span></span><span></span><span></span></div><div class="msg-right"></div></div>
+</div>
+<div class="main-container">
+    <div class="login-card">
+        <div class="logo-container">
+            <div class="logo-icon"><i class="bi bi-chat-dots-fill"></i></div>
+            <span class="logo-text">Verbox</span><span class="logo-subtext">The Vessel For Your Words</span>
+        </div>
+        <div class="two-way-indicator">
+            <div class="person-icon person-you"><i class="bi bi-person-fill"></i></div><span class="two-way-line"></span>
+            <span class="two-way-arrow"><i class="bi bi-arrow-left-right"></i></span><span class="two-way-line"></span>
+            <div class="person-icon person-other"><i class="bi bi-person-fill"></i></div>
+        </div>
+        <h1 class="page-title">Create your account</h1>
+        <form class="signup-form" id="signupForm" novalidate>
+            <div class="form-field">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" class="form-input" required placeholder="John Doe">
+                <span id="fullnameError" class="error-message"></span>
+            </div>
+            <div class="form-field">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-input" required placeholder="you@example.com">
+                <span id="emailError" class="error-message"></span>
+            </div>
+            <div class="form-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-input" required placeholder="Choose a username">
+                <span id="usernameError" class="error-message"></span>
+            </div>
+            <div class="form-field">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="form-input" required placeholder="••••••••" oninput="checkPasswordStrength()">
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('password','toggleIcon1')"><i id="toggleIcon1" class="bi bi-eye-slash"></i></button>
+                </div>
+                <span id="passwordError" class="error-message"></span>
+            </div>
+            <div class="form-field">
+                <label for="confirmPassword">Confirm password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="confirmPassword" class="form-input" required placeholder="••••••••">
+                    <button type="button" class="password-toggle-btn" onclick="togglePassword('confirmPassword','toggleIcon2')"><i id="toggleIcon2" class="bi bi-eye-slash"></i></button>
+                </div>
+                <span id="confirmError" class="error-message"></span>
+            </div>
+            <button type="submit" class="submit-btn">Sign up</button>
+        </form>
+        <div class="divider-container"><span class="divider-line"></span><span class="divider-text">or sign up with</span><span class="divider-line"></span></div>
+        <button type="button" class="sso-btn google-btn" id="googleSignUpBtn">
+            <svg class="sso-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continue with Google
+        </button>
+        <button type="button" class="sso-btn github-btn" id="githubSignUpBtn">
+            <svg class="sso-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+            Continue with GitHub
+        </button>
+        <div class="links-container">
+            <p class="login-text">Already have an account? <a href="/login.html" class="login-link">Log in</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- Beautified notification modal -->
+<div class="modal fade" id="notifyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-secondary">
+      <div class="modal-body text-center py-4">
+        <div id="notifyIcon" class="icon-circle success mb-3">
+          <i id="notifyIconInner" class="bi bi-check-circle-fill fs-1"></i>
+        </div>
+        <h6 id="notifyModalTitle" class="fw-bold mb-2"></h6>
+        <p id="notifyModalBody" class="text-white-50 small mb-3"></p>
+      </div>
+      <div class="modal-footer border-secondary justify-content-center">
+        <button type="button" class="btn btn-verbox px-4" id="notifyModalOk">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function togglePassword(id, iconId) { const inp=document.getElementById(id), ic=document.getElementById(iconId); if (inp.type==="password") { inp.type="text"; ic.className="bi bi-eye"; } else { inp.type="password"; ic.className="bi bi-eye-slash"; } }
+    function validatePassword(p) { if (p.length<8) return "Password must be at least 8 characters."; if (!/[a-z]/.test(p)) return "Password must contain at least one lowercase letter."; if (!/[A-Z]/.test(p)) return "Password must contain at least one uppercase letter."; if (!/\d/.test(p)) return "Password must contain at least one number."; return true; }
+    function checkPasswordStrength() { const e=document.getElementById("passwordError"); const r=validatePassword(document.getElementById("password").value); e.textContent = r===true ? "" : r; }
+
+    const notifyModal = new bootstrap.Modal(document.getElementById('notifyModal'));
+    const notifyIconEl = document.getElementById('notifyIcon');
+    const notifyIconInner = document.getElementById('notifyIconInner');
+    const notifyModalTitle = document.getElementById('notifyModalTitle');
+    const notifyModalBody = document.getElementById('notifyModalBody');
+    const notifyModalOk = document.getElementById('notifyModalOk');
+
+    function showNotify(title, message, type = 'success', callback) {
+        notifyModalTitle.textContent = title;
+        notifyModalBody.textContent = message;
+        if (type === 'success') { notifyIconEl.className = 'icon-circle success mb-3'; notifyIconInner.className = 'bi bi-check-circle-fill fs-1'; }
+        else if (type === 'error') { notifyIconEl.className = 'icon-circle error mb-3'; notifyIconInner.className = 'bi bi-exclamation-circle-fill fs-1'; }
+        else { notifyIconEl.className = 'icon-circle success mb-3'; notifyIconInner.className = 'bi bi-info-circle-fill fs-1'; }
+        notifyModal.show();
+        notifyModalOk.onclick = () => { notifyModal.hide(); if (callback) callback(); };
+    }
+</script>
+<script type="module">
+    import User from "./user.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getDatabase , ref , set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    import firebaseConfig from './firebase-config.js';
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase();
+    document.getElementById("googleSignUpBtn").addEventListener("click", () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).then((result) => { showNotify("Success", "Welcome, " + result.user.displayName + "!", "success", () => { window.location.href = "./chat.html"; }); })
+        .catch((error) => { showNotify("Sign-up Failed", "Google sign-up failed: " + error.message, "error"); });
+    });
+    document.getElementById("githubSignUpBtn").addEventListener("click", () => {
+        const provider = new GithubAuthProvider();
+        signInWithPopup(auth, provider).then((result) => { showNotify("Success", "Welcome, " + (result.user.displayName || result.user.email) + "!", "success", () => { window.location.href = "./chat.html"; }); })
+        .catch((error) => { showNotify("Sign-up Failed", "GitHub sign-up failed: " + error.message, "error"); });
+    });
+    document.getElementById("signupForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fullname = document.getElementById("fullname").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        const fullnameErr = document.getElementById("fullnameError");
+        const emailErr = document.getElementById("emailError");
+        const passErr = document.getElementById("passwordError");
+        const confirmErr = document.getElementById("confirmError");
+        fullnameErr.textContent = emailErr.textContent = passErr.textContent = confirmErr.textContent = "";
+        if (!fullname) { fullnameErr.textContent="Full name is required."; return; }
+        if (!email || !email.includes("@")) { emailErr.textContent="Valid email required."; return; }
+        const strengthMsg = validatePassword(password);
+        if (strengthMsg !== true) { passErr.textContent = strengthMsg; return; }
+        if (password !== confirm) { confirmErr.textContent="Passwords do not match."; return; }
+        createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+            const user = userCredential.user;
+            updateProfile(user, { displayName: fullname }).then(() => {
+                showNotify("Success", "Account created! Welcome to Verbox.", "success", () => {
+                    const username = document.getElementById('username').value.trim() || email.split('@')[0];
+                    const nperson = new User(fullname, user.email, user.uid, user.photoURL, username);
+                    nperson.saveUser();
+                    window.location.href = "./chat.html";
+                });
+            });
+        }).catch((error) => { showNotify("Sign-up Failed", error.message, "error"); });
+    });
+    onAuthStateChanged(auth, (user) => { if (user) console.log(user); else console.log("No user signed in."); });
+</script>
+</body>
+</html>
